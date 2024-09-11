@@ -3,7 +3,7 @@
 
 ## Simlab
 
-<img src="data/Simlab.png" alt="Example Image" >
+<img src="data/simlab.png" alt="Example Image" >
 
 ## Some definition
 
