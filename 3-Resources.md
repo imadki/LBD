@@ -1,9 +1,9 @@
 
 <h1 align="center">Reservation commands</h1>
 
-## Simlab & Toubkal
+## Simlab
 
-<img src="data/Toubkal-Simlab.png" alt="Example Image" >
+<img src="data/Simlab.png" alt="Example Image" >
 
 ## Some definition
 
@@ -13,8 +13,8 @@
 
 - Core
 	- Slurm refers to cores as CPUs.
-	- there are 40/44 cores per node in Simlab, and 56/112/128 cores in Toubkal 
-	- up to 384GB memory per node in Simlab & up to 1.5TB for some nodes in Toubkal
+	- there are 40/44 cores per node in Simlab
+	- up to 384GB memory per node in Simlab
 
 - Task
 	- a task can be considered a command such as blast, bwa, script.py
@@ -86,7 +86,7 @@ or
 ```shell
 ssqueue
 ```
-- Output in Simlab:
+- Output:
 ```shell
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
            5858476      defq     bash ikissami  R       0:35      1 node03
@@ -95,12 +95,6 @@ JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
 ```shell
 ssh node03
 ```
-- Output in Toubkal:
-```shell
-JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-           2094639   compute     bash imad.kis  R       0:04      1 slurm-compute-h21a5-u14-svn1
-```
-***You can now run `ssh slurm-compute-h21a5-u14-svn1`.***
 
 ### 3. `sbatch` command
 
@@ -210,88 +204,6 @@ special      up      30:00      2   idle node[05,11]
   </tr>
 </table>
 
-- Output in Toubkal
-```shell
-PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
-compute*     up   infinite    653  down$ slurm-compute-h21a5-u23-svn[2,4],slurm-compute-h21a5-u24-svn[1,3],slurm-compute-h21a5-u25-svn[2,4],slurm-compute-h21a5-u26-svn[1,3],slurm-compute-h21a5-u27-svn[2,4],slurm-compute-h21a5-u28-svn[1,3],slurm-compute-h21a5-u29-svn[2,4],slurm-compute-h21a5-u30-svn[1,3],slurm-compute-h21a5-u31-svn[2,4],slurm-compute-h21a5-u32-svn[1,3],slurm-compute-h21a5-u33-svn[2,4],slurm-compute-h21a5-u34-svn[1,3],slurm-compute-h21a5-u35-svn[2,4],slurm-compute-h21a5-u36-svn[1,3],slurm-compute-h21a8-u1-svn[2,4],slurm-compute-h21a8-u2-svn[1,3],slurm-compute-h21a8-u23-svn[2,4],
-[...]
-himem        up   infinite      1  maint slurm-himem-h22a8-u5-sv
-himem        up   infinite      1    mix slurm-himem-h22a8-u9-sv
-himem        up   infinite      2  alloc slurm-himem-h22a8-u1-sv,slurm-himem-h22a8-u3-sv
-himem        up   infinite      1   idle slurm-himem-h22a8-u7-sv
-gpu          up   infinite      1  maint slurm-a100-gpu-h22a2-u14-sv
-gpu          up   infinite      2    mix slurm-a100-gpu-h22a2-u10-sv,slurm-a100-gpu-h22a2-u18-sv
-gpu          up   infinite      2   idle slurm-a100-gpu-h22a2-u22-sv,slurm-a100-gpu-h22a2-u26-sv
-```
-<table>
-  <tr>
-    <th>Partition</th>
-    <th>Nodes available for the partition</th>
-  </tr>
-  <tr>
-    <td>compute</td>
-    <td>1219</td>
-  </tr>
-  <tr>
-    <td>himem</td>
-    <td>5</td>
-  </tr>
-  <tr>
-    <td>gpu</td>
-    <td>5</td>
-  </tr>
-</table>
-
-- Display the state for each node 
-```shell
-sinfo -o "%n %G %C %t"
-```
-- Output in Simlab
-```shell
-HOSTNAMES GRES CPUS(A/I/O/T) STATE
-node01 (null) 0/40/0/40 resv
-node02 (null) 0/40/0/40 resv
-node03 (null) 30/14/0/44 mix
-node04 (null) 30/14/0/44 mix
-node14 gpu:1 43/1/0/44 mix
-node15 gpu:1 44/0/0/44 alloc
-node05 (null) 0/44/0/44 idle
-node06 gpu:1 6/38/0/44 mix
-node07 gpu:1 44/0/0/44 alloc
-node08 gpu:1 44/0/0/44 alloc
-node12 gpu:1 44/0/0/44 alloc
-node13 gpu:1 44/0/0/44 alloc
-node16 gpu:1 44/0/0/44 alloc
-node09 gpu:1 0/44/0/44 idle
-node10 gpu:1 0/44/0/44 idle
-node11 gpu:1 0/44/0/44 idle
-node17 gpu:1 0/44/0/44 idle
-visu01 gpu:1 1/43/0/44 mix
-```
-- Display the available CPUs per partition in Simlab
-```shell
-sinfo -o "%n %G %C %t %P" --noheader | grep -v -e "resv" -e "drain" -e "maint" | awk '{split($3,cpus,"/"); partition[$5]+=cpus[2]} END {for (p in partition) print p, partition[p]}'
-```
-- Output in Simlab:
-```shell
-special  438
-gpu      366
-shortq   94
-defq*    94
-visu     44
-longq    94
-```
-- Output in Toubkal:
-```shell
-gpu       511
-himem     114
-compute*  20682
-```
-- Or In both Toubkal and Simlab add this command to `~/.bashrc` file, then tap `source ~/.bashrc`
-```shell
-alias cpusinfo='sinfo -o "%n %G %C %t %P" --noheader | grep -v -e "resv" -e "drain" -e "maint" | awk '\''{split($3,cpus,"/"); partition[$5]+=cpus[2]} END {for (p in partition) print p, partition[p]}'\'' | colum -t'
-```
-***You can run `cpusinfo` command to get the same output***
 
 ### 2. `squeue` command
 
@@ -343,100 +255,6 @@ squeue -u $USER -t pending
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
            5858549       gpu     bash ikissami PD       0:00      1 (Resources)
 ```
-### 3. Useful commands (CPUs & GPUs availability)
-- Display the available GPUs 
-    - In simlab there is only one GPU per node
-    - In Toubkal there are 4 GPUs per node
-```shell
-sinfo -o "%n %G %C %t"
-```
-```shell
-HOSTNAMES GRES CPUS(A/I/O/T) STATE
-node01 (null) 0/40/0/40 resv
-node02 (null) 0/40/0/40 resv
-node03 (null) 30/14/0/44 mix
-node04 (null) 30/14/0/44 mix
-node14 gpu:1 22/22/0/44 mix
-node15 gpu:1 44/0/0/44 alloc
-node05 (null) 0/44/0/44 idle
-node06 gpu:1 1/43/0/44 mix
-node07 gpu:1 1/43/0/44 mix
-node13 gpu:1 1/43/0/44 mix
-node16 gpu:1 6/38/0/44 mix
-node10 gpu:1 44/0/0/44 alloc
-node12 gpu:1 44/0/0/44 alloc
-node08 gpu:1 0/44/0/44 idle
-node09 gpu:1 0/44/0/44 idle
-node11 gpu:1 0/44/0/44 idle
-node17 gpu:1 0/44/0/44 idle
-visu01 gpu:1 0/44/0/44 idle
-```
-***This command does not give exact information about the available GPUs***
-
-***When the state is mixed for a node containing gpu, it does not mean that the gpu is not available***
-
-**Example:**
-- Allocate 1 task in the gpu partition
-```shell
-srun --partition=gpu --nodelist=node11 --pty bash
-```
-- Run `sinfo -o "%n %G %C %t" | grep node11`
-```shell
-node11 gpu:1 1/43/0/44 mix
-```
-- Now I can run `srun --partition=gpu --nodelist=node11 --gres=gpu:1 --pty bash` to allocate the gpu in the `node11`
-- Run `sinfo -o "%n %G %C %t" | grep node11`
-```shell
-node11 gpu:1 2/43/0/44 mix
-```
-
-- In Simlab Add this command to `~/.bashrc` file, then tap `source ~/.bashrc`
-```shell
-gpuspernode=1
-cpuspernode=44
-alias gpusinfo='(squeue -t RUNNING -o "%N %b %C" | awk "NR>1 {split(\$2, gpuArray, \":\"); nodes[\$1]+=\$2; gpus[\$1]+=gpuArray[2]; cpus[\$1]+=\$3} END {for (node in nodes) print node, '$gpuspernode'-gpu\
-s[node], '$cpuspernode'-cpus[node]}" && sinfo -p gpu --states=idle --noheader -o "%n %G %c" | grep -v -e "maint" -e "drain" -e "resv" | awk "{gsub(/[^0-9]/, \"\", \$2); print \$1, \$2, \$3}") | grep -F "\
-$(sinfo -o "%n %G" | grep "gpu" | awk "{print \$1}")" | column -t'
-```
-
-- In Toubkal Add this command to `~/.bashrc` file, then tap `source ~/.bashrc`
-```shell
-gpuspernode=4
-cpuspernode=128
-alias gpusinfo='(squeue -t RUNNING -p gpu -o "%N %b %C" | awk "NR>1 {split(\$2, gpuArray, \":\"); nodes[\$1]+=\$2; gpus[\$1]+=gpuArray[3]; cpus[\$1]+=\$3} END {for (node in nodes) print node, '$gpusperno\
-de'-gpus[node], '$cpuspernode'-cpus[node]}" && sinfo -p gpu --states=idle --noheader -o "%n %G %c" | grep -v -e "maint" -e "drain" -e "resv" | awk "{gsub(/[^0-9]/, \"\", \$2); print \$1, \$2, \$3}") | column -t'
-```
-
-- Display the information about GPU availability
-```shell
-gpusinfo
-```
-
-- Output in Simlab
-```shell
-node07  0  43
-node16  1  39
-node10  0  0
-node12  0  0
-node13  0  43
-node14  0  22
-node06  0  43
-node15  1  0
-node08  1  44
-node09  1  44
-node11  1  44
-node17  1  44
-```
-***This means that node08, node09, node11, node16 and node17 are available to be allocated***
-
-- Output in Toubkal
-```shell
-slurm-a100-gpu-h22a2-u18-sv 0 124
-slurm-a100-gpu-h22a2-u10-sv 1 125
-slurm-a100-gpu-h22a2-u22-sv 4 128
-slurm-a100-gpu-h22a2-u26-sv 4 128
-```
-***This means that slurm-a100-gpu-h22a2-u10-sv, slurm-a100-gpu-h22a2-u22-sv and slurm-a100-gpu-h22a2-u26-sv are available to be allocated***
 
 ## III.  Slurm Parameters: nodes, partitions, tasks, memory, time
 
@@ -582,111 +400,6 @@ srun --partition=gpu --nodes=2 --gres=gpu:1 --pty bash
 JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
            5858659       gpu     bash ikissami  R       0:03      2 node[16-17]
 ```
-
-### - In Toubkal
-1. Partition
-<table>
-  <tr>
-    <th>Partition</th>
-    <th>Nodes available for the partition</th>
-  </tr>
-  <tr>
-    <td>compute</td>
-    <td>1219</td>
-  </tr>
-  <tr>
-    <td>himem</td>
-    <td>5</td>
-  </tr>
-  <tr>
-    <td>gpu</td>
-    <td>5</td>
-  </tr>
-</table>
-
-3. Qos
-
-| QOS              | Time Limit     | Max. allowed usage of resources per user for all jobs     | Max. Minutes for all jobs |
-|-------------------|---------------|---------------|-----------|
-| intr              | 01:00:00      | node=3        | |
-| default-cpu       | 1-12:00:00    | cpu=3584      | |
-| himem-cpu         | 1-12:00:00    | cpu=112       | |
-| low-cpu           | 12:00:00      | node=16       |  cpu=4129440 |
-| default-gpu       | 1-00:00:00    | gres/gpu=8    | |
-| low-gpu           | 12:00:00      | node=4        |gres/gpu=1200|
-| long-cpu          | 28-00:00:00   | cpu=1792      | |
-| large-cpu         | 1-12:00:00    | cpu=7168      | |
-| low-default-cpu  | 1-12:00:00    | cpu=7168      | |
-| long-himem        | 7-00:00:00    | cpu=112       | |
-| benchmark-cpu     | 1-12:00:00    | cpu=14336     | |
-| long-gpu          | 7-00:00:00    | gres/gpu=4    | |
-
-- Check the qos allowed for you (by defaut you are allowed to low-cpu and default-cpu).
-```shell
-sacctmgr show assoc where user=$USER format=qos%30,account%50,partition
-```
-***Send an email to support-hpc@um6p.ma to get access to other qos***
-- Output:
-```shell
-                          QOS                                            Account  Partition 
------------------------------- -------------------------------------------------- ---------- 
-                       low-gpu                         manapy-1wabcjwe938-low-gpu        gpu 
-              default-gpu,intr                     manapy-1wabcjwe938-default-gpu        gpu 
-                       low-cpu            manapy-um6p-st-msda-1wabcjwe938-low-cpu    compute 
-                       low-cpu            manapy-um6p-st-msda-1wabcjwe938-low-cpu      himem 
-    default-cpu,himem-cpu,intr        manapy-um6p-st-msda-1wabcjwe938-default-cpu    compute 
-    default-cpu,himem-cpu,intr        manapy-um6p-st-msda-1wabcjwe938-default-cpu      himem 
-```
-**Example 1**
-
-- Allocate resources in the gpu partition (run gpusinfo to check if there are available gpus):
-```shell
-srun --nodes=2 --partition=gpu --account=manapy-1wabcjwe938-default-gpu --gres=gpu:4 --pty bash
-```
-```shell
-squeue -u $SUSER
-```
-```shell
-JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-           2096233       gpu     bash imad.kis  R       0:32      2 slurm-a100-gpu-h22a2-u18-sv,slurm-a100-gpu-h22a2-u22-sv
-```
-- Display job information
-```shell
-scontrol show job 2096233
-```
-- Output:
-```shell
-JobId=2096233 JobName=bash
-   UserId=imad.kissami(1853008732) GroupId=utilisateurs du domaine(1853000513) MCS_label=N/A
-   Priority=500 Nice=0 Account=manapy-1wabcjwe938-default-gpu QOS=default-gpu
-   JobState=RUNNING Reason=None Dependency=(null)
-   Requeue=1 Restarts=0 BatchFlag=0 Reboot=0 ExitCode=0:0
-   RunTime=00:00:47 TimeLimit=1-00:00:00 TimeMin=N/A
-   SubmitTime=2023-12-09T15:45:15 EligibleTime=2023-12-09T15:45:15
-   AccrueTime=Unknown
-   StartTime=2023-12-09T15:45:15 EndTime=2023-12-10T15:45:15 Deadline=N/A
-   PreemptEligibleTime=2023-12-09T15:45:15 PreemptTime=None
-   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2023-12-09T15:45:15 Scheduler=Main
-   Partition=gpu AllocNode:Sid=slurm-slurm-h22a8-u17-sv:2414105
-   ReqNodeList=(null) ExcNodeList=(null)
-   NodeList=slurm-a100-gpu-h22a2-u18-sv,slurm-a100-gpu-h22a2-u22-sv
-   BatchHost=slurm-a100-gpu-h22a2-u18-sv
-   NumNodes=2 NumCPUs=2 NumTasks=2 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
-   TRES=cpu=2,mem=16100M,node=2,billing=2,gres/gpu=8
-   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
-   MinCPUsNode=1 MinMemoryCPU=8050M MinTmpDiskNode=0
-   Features=(null) DelayBoot=00:00:00
-   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
-   Command=bash
-   WorkDir=/home/imad.kissami
-   Power=
-   TresPerNode=gres:gpu:4
-   ```
-  **Example 2**
-- Allocate resources in the himem partition (run cpusinfo to check if there are available cpus):
-```shell
-srun --nodes=1 --ntasks=1 --partition=himem --qos=himem-cpu --account=manapy-um6p-st-msda-1wabcjwe938-default-cpu --pty bash
-```
    
 ### 3. `--ntasks`
   - *a task can be considered a command such as blastn, .exe, script.py, etc.*
@@ -775,7 +488,6 @@ srun --partition=shortq --ntasks=44 --pty bash
     - `--time=24:00:00`   *# max runtime 24 hours (same as `--time=1-00:00:00`)*
     - `--time=7-00:00:00` *# max runtime 7 days*
     - In Simlab, the time limite depends on the partition
-    - In Toubkal, the time limite depends on the qos
    
 - Display the time limite for all jobs
 ```shell
@@ -794,83 +506,6 @@ Sat Dec  9 15:06:00 2023
            5858335     longq   300_fn    safae  RUNNING 1-20:34:17 30-00:00:00      1 node14
            5858334     longq 2_str_10    safae  RUNNING 1-20:39:01 30-00:00:00      1 node14
            5858542     longq       AI ilyas.bo  RUNNING    1:27:18 4-04:00:00      1 node05
-```
-**Example:**
-- If you have access to `low-gpu` qos in Toubkal, you're limited to 1200 minutes for all jobs
-
-| QOS              | Time Limit     | Max. allowed usage of resources per user     | Max. allowed usage of resources for all jobs |
-|-------------------|---------------|---------------|-----------|
-| low-gpu           | 12:00:00      | node=4        |gres/gpu=1200| 
-- Runing multiple batch files asking for 1 gpu 
-```shell
-#!/bin/bash
-
-#SBATCH --partition=gpu # partition name
-#SBATCH --account=manapy-1wabcjwe938-low-gpu 
-#SBATCH --nodes=1  # number of nodes to reserve
-#SBATCH --gres=gpu:1 # use 1 gpus (On toubkal each node has 4 gpus)
-
-sleep 100 
-```
-- The `low-gpu`  qos allows me to run job during 12 hours, with max of 4 nodes. For the example, let's submit this job 3 times.
-```shell
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-```
-```shell
-JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-           2100331       gpu batch_gp imad.kis PD       0:00      1 (QOSGrpGRESRunMinutes)
-           2100330       gpu batch_gp imad.kis PD       0:00      1 (QOSGrpGRESRunMinutes)
-           2100329       gpu batch_gp imad.kis  R       0:00      1 slurm-a100-gpu-h22a2-u10-sv
-```
-***Oups!!! 2 jobs are pending with reason: QOSGrpGRESRunMinutes***
-***This is due to Max. allowed usage of resources for all jobs, which is fixed to `gres/gpu=1200`=> 1200 minutes for all jobs***
-***When you don't specifiy the time limit using `--time`, the job takes the max. time lime allowed by the qos***
--	In our case 12 hours. To check that run `squeue -l -u $USER`
-```shell
-OBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
-           2100429       gpu batch_gp imad.kis  PENDING       0:00  12:00:00      1 (QOSGrpGRESRunMinutes)
-           2100428       gpu batch_gp imad.kis  PENDING       0:00  12:00:00      1 (QOSGrpGRESRunMinutes)
-           2100427       gpu batch_gp imad.kis  RUNNING       0:01  12:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-```
-***Here the max. time limites for all the jobs is equal to 12x3=36 hours=2160 minutes > 1200 minutes)***
-
-**Solution:**
-
-- Cancel all the jobs and add `--time` option to limite the time
-	- `scancel JOBID`
-	- `scancel -u <username>`
-	- `scancel -t PENDING -u <username>`
-
-```shell
-#!/bin/bash
-
-#SBATCH --partition=gpu # partition name
-#SBATCH --account=manapy-1wabcjwe938-low-gpu 
-#SBATCH --nodes=1  # number of nodes to reserve
-#SBATCH --gres=gpu:1 # use 1 gpus (On toubkal each node has 4 gpus)
-#SBATCH --time=04:00:00 # max runtime 4 hours
-sleep 100 
-```
-- Run the jobs
-```shell
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-```
-```shell
-Sun Dec 10 16:48:53 2023
-             JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
-           2100457       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-           2100458       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-           2100459       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-```
-- Or, update the time limit for the current jobs using `scontrol` commad.
-```shell
-scontrol update jobid=2100457 Timelimit=04:00:00
-scontrol update jobid=2100458 Timelimit=04:00:00
-scontrol update jobid=2100459 Timelimit=04:00:00
 ```
 
 ### 5. `--mem`
@@ -927,14 +562,6 @@ JobId=5858555 JobName=bash
 | node03-node17     | 376 GB  |  8.7GB |
 
  
- ### - In Toubkal
-
-| Partition | MEMORY     | MEMORY PER CPU
-|------------|------------|------------|
-| compute     | 186 GB  |3.4GB|
-| himem     | 1.5 TB  | 13.5GB |
-| gpu     | 1 TB  | 8GB|
-
 ***By default, the allocated CPU memory is proportional to the number of reserved cores. For example, if you request 1/4 of the cores of a node, you will have access to 1/4 of its memory.***
 
 **Example 1** (In simlab)
@@ -1022,7 +649,6 @@ JobId=5858558 JobName=bash
 ```
 ***The number of allocated cpus is equal to 3, even if you asked only one. This is because to satisfy 20GB you need at least 3 cpus (3x8.7=26,1GB).***
 ***So the rule is when you want to allocate a specific memory, check first if there are enough cpus***
-***In Toubkal the memory depends on the partition (see the table above).***
 
 ### 6. `--job-name`
  - *set the job name, keep it short and concise without spaces (optional but highly recommended)*
@@ -1212,26 +838,6 @@ ReservationName=hpc_training	StartTime=2023-12-14T13:00:00	EndTime=2023-12-14T18
 
 **Example**
 
-- Check the GPU availability
-```shell
-gpusinfo
-```
-```shell
-node07  0  3
-visu01  1  43
-node12  0  0
-node13  0  43
-node14  0  16
-node06  0  43
-node15  0  0
-node08  1  44
-node09  1  44
-node10  1  44
-node11  1  44
-node16  1  44
-node17  1  44
-```
-***At least one GPU node is available***
 - Check jobs status
 ```shell
 squeue -l
@@ -1273,4 +879,5 @@ Tue Dec 12 20:25:44 2023
 ```
 
 ***The new job is running***
+
 
