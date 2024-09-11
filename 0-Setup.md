@@ -14,8 +14,3 @@ git clone https://github.com/HPC-Simlab/simlab-training.git
 ```shell
 ssh -CY <login>@simlab-cluster.um6p.ma
 ```
-
-- Access to Toubkal
-```shell
-ssh -CY <login>@toubkal.hpc.um6p.ma
-```
