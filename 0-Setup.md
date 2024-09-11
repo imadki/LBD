@@ -1,7 +1,7 @@
 # Clone the github repo
 
 ```shell
-git clone https://github.com/HPC-Simlab/simlab-training.git
+git clone https://github.com/imadki/LBD.git
 ```
 
 # Windows
