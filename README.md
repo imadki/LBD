@@ -1,1 +1,1 @@
-# simlab-training
+# LBD (HPC Platforms - SIMLAB)
