@@ -15,34 +15,7 @@ GCCcore/8.3.0
 GCCcore/9.3.0
 GCCcore/10.2.0
 ```
-- In Toubkal:
-```shell
-module --terse avail 2>&1 | grep -i '^\(gcc\)'
-```
-```shell
-GCC/
-GCC/7.3.0-2.30
-GCC/8.2.0-2.31.1
-GCC/8.3.0
-GCC/9.3.0
-GCC/10.2.0
-GCC/10.3.0
-GCC/11.2.0
-GCC/11.3.0
-GCCcore/
-GCCcore/7.3.0
-GCCcore/8.2.0
-GCCcore/8.3.0
-GCCcore/9.3.0
-GCCcore/10.2.0
-GCCcore/10.3.0
-GCCcore/11.2.0
-GCCcore/11.3.0
-GCCcore/12.2.0
-gcccuda/
-gcccuda/2018b
-gcccuda/2020b
-```
+
 ### Load a module (default one)
 
 ```shell
@@ -110,20 +83,6 @@ HINT: Might try "module unload GCCcore" first.
 
 ***The best solution is to `purge` all modules.***
 
-**In Toubkal**
-- Load default GCC version
-```shell
-module load GCC
-```
-- Try again to load GCC/9.3.0
-```shell
-module load GCC/9.3.0
-```
-```shell
-Les modules suivants ont été rechargés avec un changement de version :
-  1) GCC/11.3.0 => GCC/9.3.0     2) GCCcore/11.3.0 => GCCcore/9.3.0     3) binutils/2.38-GCCcore-11.3.0 => binutils/2.34-GCCcore-9.3.0     4) zlib/1.2.12-GCCcore-11.3.0 => zlib/1.2.11-GCCcore-9.3.0
-```
-***The dependent modules will be reloaded automatically with the new GCC version.***
 
 ### Add modules to `~/.bashrc` file
 
