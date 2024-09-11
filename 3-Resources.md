@@ -24,8 +24,6 @@
 
 ## I. Reserve resources
 
-**!!In simlab, please add `--reservation=hpc_training` in all the reservations!!**
-
 
 ### 1. `srun` command
 - Obtain a terminal on a CPU or GPU compute node within which you can execute your code,
