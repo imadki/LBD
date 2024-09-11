@@ -4,12 +4,6 @@
 - Open `~/.ssh/config` file, and add:
 	- Change `<login>` with yours.
 ```shell
-host toubkal
-     hostname toubkal.hpc.um6p.ma
-     user <login>
-     Compression yes
-     ForwardX11 yes
-     
 host simlab
      hostname simlab-cluster.um6p.ma
      user <login>
