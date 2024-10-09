@@ -391,3 +391,130 @@ print(estimate_pi($num_samples))
 ```shell
 srun --partition=gpu --nodes=1 --constraint=V100 --gres=gpu:1 --pty bash
 ```
+
+### 4. `--dependency`
+
+- You may submit jobs that runs depending on status of the previously submitted jobs or schedule a bunch of jobs to run one after the other.
+
+- Once you submit a job, using that job ID, you can submit dependency jobs.
+
+- You need to extract the job id “12345” from the output of the “sbatch” command
+```shell
+$ sbatch job.cmd
+Submitted batch job 12345
+```
+- By adding the “–parsable” option to “sbatch command”, only the job ID would be returned and its value can be stored in a shell variable for later use.
+
+```shell
+$ jobID=$(sbatch --parsable job.cmd)
+$ echo ${jobID}
+12345
+```
+- Next, you can submit a job that only runs after successful completion of the first job as follows where we set the “afterok” as the dependency type.
+
+```shell
+$ sbatch --dependency=afterok:${jobID} second_job.cmd
+```
+
+The format here is
+```shell
+$ sbatch --dependency=type:job_id jobfile
+```
+
+- If the job requires more than one job to be completed before it is executed, you can supply all the jobids using , separator
+
+```shell
+$ sbatch --dependency=type:job_id,job_id,job_id jobfile
+```
+
+- You can also set the job to run if any one of the job ids completes successfully using a ? separator
+```shell
+$ sbatch --dependency=type:job_id?job_id?job_id jobfile
+```
+
+- The other dependencies that can be used for<type:job_id> are as follows:
+
+| **Type**      | **Description**                                                                                  |
+|---------------|--------------------------------------------------------------------------------------------------|
+| `after`       | This job can begin execution after the specified jobs have begun execution.                       |
+| `afterany`    | This job can begin execution after the specified jobs have terminated.                            |
+| `aftercorr`   | A task of this job array can begin execution after the corresponding task ID in the specified job has completed successfully. |
+| `afternotok`  | This job can begin execution after the specified jobs have terminated in some failed state.       |
+| `afterok`     | This job can begin execution after the specified jobs have successfully executed.                 |
+| `singleton`   | This job can begin execution after any previously launched jobs sharing the same job name and user have terminated |
+
+
+#### Example:
+
+- dependency.slurm
+
+```shell
+#!/bin/bash                                                                                                                                                                                                                     
+
+# Submit the first job and capture its job ID                                                                                                                                                                                   
+job1=$(sbatch --parsable job1.slurm)
+echo "Submitted job1 with Job ID: $job1"
+
+# Submit the second job, dependent on the successful completion of job1                                                                                                                                                         
+job2=$(sbatch --dependency=afterok:${job1} --parsable job2.slurm)
+echo "Submitted job2 with Job ID: $job2, dependent on job1"
+
+# Submit the third job, dependent on the successful completion of job2                                                                                                                                                          
+job3=$(sbatch --dependency=afterok:${job2} --parsable job3.slurm)
+echo "Submitted job3 with Job ID: $job3, dependent on job2"
+```
+
+- job1.slum:
+```shell
+#!/bin/bash                                                                                                                                                                                                                     
+
+#SBATCH --job-name=example_job    # Job name                                                                                                                                                                                    
+#SBATCH --output=job1_output.txt  # Standard output and error log                                                                                                                                                               
+#SBATCH --error=job1_error.txt    # Separate file for error log (optional)                                                                                                                                                      
+#SBATCH --ntasks=1                # Run a single task                                                                                                                                                                           
+#SBATCH --time=00:05:00           # Time limit (hh:mm:ss)                                                                                                                                                                       
+#SBATCH --mem=100M                # Memory limit                                                                                                                                                                                
+
+# Commands to execute                                                                                                                                                                                                           
+echo "Hello, World!"
+```
+
+- job2.slum:
+```shell
+#!/bin/bash                                                                                                                                                                                                                     
+#SBATCH --job-name=sum_numbers     # Job name                                                                                                                                                                                   
+#SBATCH --output=job2_output.txt   # Standard output log                                                                                                                                                                        
+#SBATCH --error=job2_error.txt     # Error log                                                                                                                                                                                  
+#SBATCH --ntasks=1                 # Run a single task                                                                                                                                                                          
+#SBATCH --time=00:05:00            # Time limit (hh:mm:ss)                                                                                                                                                                      
+#SBATCH --mem=100M                 # Memory limit                                                                                                                                                                               
+
+# Commands to execute                                                                                                                                                                                                           
+sum=0
+for i in {1..100}; do
+  sum=$((sum + i))
+done
+
+echo "The sum of numbers from 1 to 100 is: $sum"
+```
+
+
+- job3.slum:
+```shell
+#!/bin/bash
+#SBATCH --job-name=write_date      # Job name
+#SBATCH --output=job3_output.txt   # Standard output log
+#SBATCH --error=job3_error.txt     # Error log
+#SBATCH --ntasks=1                 # Run a single task
+#SBATCH --time=00:05:00            # Time limit (hh:mm:ss)
+#SBATCH --mem=100M                 # Memory limit
+
+# Commands to execute
+echo "Current date and time: $(date)"
+```
+
+- Run the job
+
+```shell
+sbatch dependency.slurm
+```
