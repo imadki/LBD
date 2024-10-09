@@ -253,58 +253,34 @@ squeue -l
 ```
 - Output:
 ```shell
-Sat Dec  9 15:06:00 2023
+Wed Oct  9 10:02:14 2024
              JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
-           5858461       gpu Delis.sl noureddi  RUNNING   18:54:26 2-00:00:00      1 node14
-           5858543    shortq     bash issam.ai  RUNNING    1:02:28   4:00:00      1 node03
-           5858550       gpu 3Dcamber sboughou  RUNNING       9:15 2-00:00:00      1 node17
-           5857887     longq     Toth zakaria.  RUNNING 8-21:37:30 25-06:00:00      1 node15
-           5858432     longq jupyter- haitham.  RUNNING   22:45:46 30-00:00:00      1 node14
-           5858338     longq    ST_fn    safae  RUNNING 1-19:21:14 30-00:00:00      1 node14
-           5858335     longq   300_fn    safae  RUNNING 1-20:34:17 30-00:00:00      1 node14
-           5858334     longq 2_str_10    safae  RUNNING 1-20:39:01 30-00:00:00      1 node14
-           5858542     longq       AI ilyas.bo  RUNNING    1:27:18 4-04:00:00      1 node05
+           5876585       gpu   my_job youness.  PENDING       0:00 2-00:00:00      1 (QOSMaxGRESPerUser)
+           5876589    shortq exo3_cor fatimaza  RUNNING       0:01     10:00      1 node14
+           5876583       gpu     bash youness.  RUNNING      11:03 2-00:00:00      1 node17
+           5876487       gpu   SPATIO ameck.do  RUNNING 1-22:25:14 2-00:00:00      1 node14
+           5876505      visu     visu sboughou  RUNNING   21:29:19 1-00:00:00      1 visu01
+           5876495       gpu jupyter- hamsbaai  RUNNING 1-11:34:39 1-20:10:00      1 node16
 ```
 **Example:**
-- If you have access to `low-gpu` qos in Toubkal, you're limited to 1200 minutes for all jobs
 
-| QOS              | Time Limit     | Max. allowed usage of resources per user     | Max. allowed usage of resources for all jobs |
-|-------------------|---------------|---------------|-----------|
-| low-gpu           | 12:00:00      | node=4        |gres/gpu=1200| 
-- Runing multiple batch files asking for 1 gpu 
 ```shell
 #!/bin/bash
 
 #SBATCH --partition=gpu # partition name
-#SBATCH --account=manapy-1wabcjwe938-low-gpu 
 #SBATCH --nodes=1  # number of nodes to reserve
-#SBATCH --gres=gpu:1 # use 1 gpus (On toubkal each node has 4 gpus)
+#SBATCH --gres=gpu:1
 
 sleep 100 
 ```
-- The `low-gpu`  qos allows me to run job during 12 hours, with max of 4 nodes. For the example, let's submit this job 3 times.
+
 ```shell
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
+Wed Oct  9 10:10:00 2024
+             JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
+           5876595       gpu time.slu ikissami  RUNNING       0:02 2-00:00:00      1 node14
 ```
-```shell
-JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-           2100331       gpu batch_gp imad.kis PD       0:00      1 (QOSGrpGRESRunMinutes)
-           2100330       gpu batch_gp imad.kis PD       0:00      1 (QOSGrpGRESRunMinutes)
-           2100329       gpu batch_gp imad.kis  R       0:00      1 slurm-a100-gpu-h22a2-u10-sv
-```
-***Oups!!! 2 jobs are pending with reason: QOSGrpGRESRunMinutes***
-***This is due to Max. allowed usage of resources for all jobs, which is fixed to `gres/gpu=1200`=> 1200 minutes for all jobs***
-***When you don't specifiy the time limit using `--time`, the job takes the max. time lime allowed by the qos***
--	In our case 12 hours. To check that run `squeue -l -u $USER`
-```shell
-OBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
-           2100429       gpu batch_gp imad.kis  PENDING       0:00  12:00:00      1 (QOSGrpGRESRunMinutes)
-           2100428       gpu batch_gp imad.kis  PENDING       0:00  12:00:00      1 (QOSGrpGRESRunMinutes)
-           2100427       gpu batch_gp imad.kis  RUNNING       0:01  12:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-```
-***Here the max. time limites for all the jobs is equal to 12x3=36 hours=2160 minutes > 1200 minutes)***
+
+***If you want to modify the time limit***
 
 **Solution:**
 
@@ -317,28 +293,26 @@ OBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(R
 #!/bin/bash
 
 #SBATCH --partition=gpu # partition name
-#SBATCH --account=manapy-1wabcjwe938-low-gpu 
 #SBATCH --nodes=1  # number of nodes to reserve
-#SBATCH --gres=gpu:1 # use 1 gpus (On toubkal each node has 4 gpus)
+#SBATCH --gres=gpu:1 
 #SBATCH --time=04:00:00 # max runtime 4 hours
+
 sleep 100 
 ```
+
 - Run the jobs
 ```shell
 sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
-sbatch batch_gpu.slurm
 ```
+
 ```shell
-Sun Dec 10 16:48:53 2023
+Wed Oct  9 10:07:40 2024
              JOBID PARTITION     NAME     USER    STATE       TIME TIME_LIMI  NODES NODELIST(REASON)
-           2100457       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-           2100458       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
-           2100459       gpu batch_gp imad.kis  RUNNING       0:02   4:00:00      1 slurm-a100-gpu-h22a2-u10-sv
+           5876592       gpu time.slu ikissami  RUNNING       0:06   4:00:00      1 node14
 ```
+
 - Or, update the time limit for the current jobs using `scontrol` commad.
+
 ```shell
-scontrol update jobid=2100457 Timelimit=04:00:00
-scontrol update jobid=2100458 Timelimit=04:00:00
-scontrol update jobid=2100459 Timelimit=04:00:00
+scontrol update jobid=5876595 Timelimit=04:00:00
 ```
