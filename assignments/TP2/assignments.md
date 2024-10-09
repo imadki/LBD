@@ -56,3 +56,23 @@ Create two batch jobs: Job A and Job B. Job B should depend on Job A's completio
 Use the **--dependency** flag to specify the dependency relationship between the jobs.
 
 Submit both jobs and ensure Job B only starts after Job A completes.
+
+## Exercise 3: Resource Check Script Before Job Submission
+
+In this exercise, you will create a Slurm script that checks the available resources (CPU, GPU, and node availability) before submitting a computational job to the cluster. The purpose of this exercise is to ensure that jobs are not submitted when insufficient resources are available, thus avoiding long wait times in the queue.
+Requirements:
+
+- Write a script that checks:
+    - The available CPUs and GPUs across the nodes.
+    - The state of nodes (e.g., idle, reserved, mixed).
+    - The availability of GPUs on the GPU partition.
+
+The script should check whether there are enough available resources (based on user-specified minimums) before proceeding with job submission. If resources are insufficient, it should print a message and exit without submitting the job.
+
+### Instructions:
+
+- Check Available Resources:
+    - Use the sinfo and squeue commands to check the state of the nodes and the availability of GPUs and CPUs.
+    - Parse the output of these commands to identify whether there are enough idle CPUs and GPUs available.
+
+- These values should be configurable by the user through script arguments or environment variables.
